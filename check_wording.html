@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" id="html" class="sl-theme-dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Doc comparison tool</title>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/themes/light.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/themes/dark.css"
+		/>
+	</head>
+
+	<body
+		style="
+			margin: auto;
+			padding: 20px;
+			display: flex;
+			flex-direction: column;
+			max-width: 80vw;
+			justify-content: center;
+			font-family: var(--sl-font-sans);
+			font-size: var(--sl-font-size-medium);
+			font-weight: var(--sl-font-weight-light);
+			letter-spacing: var(--sl-letter-spacing-normal);
+			line-height: var(--sl-line-height-normal);
+			align-items: center;
+			gap: 16px;
+		"
+	>
+		<sl-switch id="bg-mode" size="small" checked></sl-switch>
+		Corrected Version
+		<sl-textarea id="a" size="medium" style="min-width: 80vw"></sl-textarea>
+
+		Your Version
+		<sl-textarea id="b" size="medium" style="min-width: 80vw"></sl-textarea>
+
+		<sl-button id="submitBtn" size="small" pill>Submit</sl-button>
+
+		<sl-card class="card-basic" id="result" style="min-width: 80vw"
+			><center>
+				<i style="color: grey">Comparison result appears here</i>
+			</center></sl-card
+		>
+
+		<script
+			type="module"
+			src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/shoelace-autoloader.js"
+		></script>
+		<script>
+			const html = document.documentElement;
+			let result = document.getElementById("result");
+			let submitBtn = document.querySelector("#submitBtn");
+			const bgMode = document.getElementById("bg-mode"); // Ensure correct selector
+
+			bgMode.addEventListener("sl-change", () => {
+				console.log("Switch toggled");
+				if (bgMode.checked) {
+					html.classList.remove("sl-theme-light");
+					html.classList.add("sl-theme-dark");
+					console.log("Applied dark theme");
+				} else {
+					html.classList.remove("sl-theme-dark");
+					html.classList.add("sl-theme-light");
+					console.log("Applied light theme");
+				}
+			});
+
+			let toPush;
+			submitBtn.addEventListener("click", () => {
+				a = document.querySelector("#a").value;
+				b = document.querySelector("#b").value;
+				result.innerHTML = " ";
+				nothing(a, b);
+			});
+			function nothing(a, b) {
+				let j = 0;
+				let temp;
+				let clear = true;
+				let output = [];
+				a = a
+					.trim()
+					.replace(/^[^a-zA-Z0-9-.,:'()\//\\]/g, " ")
+					.replace(/\s+/g, " ")
+					.split(" ");
+
+				b = b
+					.trim()
+					.replace(/^[^a-zA-Z0-9-.,:'()\//\\]/g, " ")
+					.replace(/\s+/g, " ")
+					.split(" ");
+				console.log(a, b);
+				for (
+					let i = 0;
+					(i < a.length && b.length < a.length) ||
+					(i < b.length && b.length > a.length) ||
+					(i < a.length && a.length === b.length);
+					i++
+				) {
+					console.log(a[i], b[j]);
+					if (a[i] !== b[j]) {
+						console.log(a[i], "not equal to", b[j]);
+						toPush = `<span style="color: red;"><b>${
+							a[i]
+								? `${a[i]} <s>${b[j] ? b[j] : ""}</s>`
+								: `<s>${b[j] ? b[j] : ""}</s>`
+						}</b></span>`;
+						output.push(toPush);
+
+						clear = false;
+					} else {
+						output.push(a[i]);
+					}
+					j++;
+				}
+				result.innerHTML = `<center>${
+					clear ? `no difference detected` : `difference detected!`
+				}</center><br /><p>${output.join(" ")}</p>`;
+			}
+		</script>
+	</body>
+</html>
